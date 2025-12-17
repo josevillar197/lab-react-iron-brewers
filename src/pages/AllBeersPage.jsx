@@ -1,13 +1,25 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Search from "../components/Search";
-import beersJSON from "./../assets/beers.json";
+
 
 
 
 function AllBeersPage() {
   // Mock initial state, to be replaced by data from the API. Once you retrieve the list of beers from the Beers API store it in this state variable.
-  const [beers, setBeers] = useState(beersJSON);
+  const [beers, setBeers] = useState([]);
+
+  useEffect(() => {
+    axios
+    .get("https://beers-api.edu.ironhack.com/beers")
+    .then((response) => {
+      setBeers(response.data);
+    })
+    .catch((error) => {
+      console.log(error)
+    });
+  }, []);
 
 
 
@@ -18,7 +30,6 @@ function AllBeersPage() {
 
 
 
-  // The logic and the structure for the page showing the list of beers. You can leave this as it is for now.
   return (
     <>
       <Search />
@@ -31,11 +42,16 @@ function AllBeersPage() {
                 <Link to={"/beers/" + beer._id}>
                   <div className="card m-2 p-2 text-center" style={{ width: "24rem", height: "18rem" }}>
                     <div className="card-body">
+                      {beer.image_url && (
                       <img
                         src={beer.image_url}
                         style={{ height: "6rem" }}
                         alt={"image of" + beer.name}
+                        onError={(e) =>{
+                          e.target.style.display = "none";
+                        }}
                       />
+                      )}
                       <h5 className="card-title text-truncate mt-2">{beer.name}</h5>
                       <h6 className="card-subtitle mb-3 text-muted">
                         <em>{beer.tagline}</em>
